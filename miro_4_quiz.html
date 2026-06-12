@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4 — Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-mid:#5DCAA5;--green-dark:#0F6E56;
+  --red:#E24B4A;--red-light:#FCEBEB;
+  --text:#1a1a18;--text-muted:#5F5E5A;--text-hint:#888780;
+  --border:#e0ddd6;--bg:#fafaf8;--surface:#ffffff;--gray-light:#F1EFE8;
+  --radius:10px;--radius-sm:6px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:1.5rem}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;margin-bottom:1rem}
+h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+.sub{font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.6}
+
+.prog-wrap{height:4px;background:var(--gray-light);border-radius:2px;margin-bottom:.75rem;overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.prog-txt{font-size:12px;color:var(--text-hint);margin-bottom:1.25rem}
+
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.75rem 1.5rem;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:1rem}
+.q-lbl{font-size:12px;color:var(--text-hint);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.07em}
+.q-def{font-family:'Lora',serif;font-size:1.3rem;font-weight:600;line-height:1.5;margin-bottom:1.5rem}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;max-width:440px}
+.q-opt{font-family:'Inter',sans-serif;font-size:13px;padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;background:var(--bg);color:var(--text);text-align:left;transition:all .15s;line-height:1.4}
+.q-opt:hover{background:var(--green-light);border-color:var(--green-mid)}
+.q-opt.correct{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.q-opt.wrong{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.q-opt.reveal{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+
+.result{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2.5rem;text-align:center}
+.result.show{display:block}
+.res-score{font-size:3rem;font-weight:600;color:var(--green-dark)}
+.res-msg{font-size:14px;color:var(--text-muted);margin-top:.5rem}
+.btn{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:9px 22px;border-radius:var(--radius-sm);border:1px solid var(--green);cursor:pointer;background:var(--green);color:#fff;transition:all .15s;margin-top:1.5rem}
+.btn:hover{background:var(--green-dark)}
+</style>
+</head>
+<body>
+<div class="chip">B1+ · Quiz</div>
+<h2>Quick quiz</h2>
+<p class="sub">10 questions. Read each definition and choose the correct word.</p>
+
+<div class="prog-wrap"><div class="prog-fill" id="bar" style="width:0%"></div></div>
+<p class="prog-txt" id="prog">Question 1 of 10</p>
+
+<div class="q-card" id="qcard">
+  <p class="q-lbl">Definition</p>
+  <p class="q-def" id="qdef"></p>
+  <div class="q-opts" id="qopts"></div>
+</div>
+
+<div class="result" id="result">
+  <div class="res-score" id="final"></div>
+  <p class="res-msg" id="msg"></p>
+  <br>
+  <button class="btn" onclick="start()">Try again</button>
+</div>
+
+<script>
+const WORDS=[
+  {word:"gaze",def:"To look steadily at something for a long time, often with deep thought or strong emotion."},
+  {word:"intend",def:"To have a plan or purpose; to mean to do something."},
+  {word:"vital",def:"Extremely important; necessary for success or survival."},
+  {word:"estimate",def:"To roughly calculate the size, value, or amount of something."},
+  {word:"assumption",def:"Something you believe to be true without proof."},
+  {word:"development",def:"The process by which something grows, changes, or becomes more advanced."},
+  {word:"concept",def:"An abstract idea or principle."},
+  {word:"hazardous",def:"Dangerous; likely to cause harm."},
+  {word:"fear",def:"An unpleasant feeling caused by the belief that something dangerous might happen."},
+  {word:"nuisance",def:"A person or thing that is annoying or causes problems."},
+  {word:"evolve",def:"To develop gradually, or to cause something to change over time."},
+  {word:"lead to",def:"To cause something to happen as a result."},
+  {word:"considerably",def:"To a large or noticeable degree."},
+  {word:"potentially",def:"Possibly; in a way that might happen in the future."},
+  {word:"habitable",def:"Suitable and safe enough to live in."},
+  {word:"insurmountable",def:"So great that it cannot be dealt with or overcome."},
+  {word:"convince",def:"To persuade someone that something is true, or to do something."},
+  {word:"refer to",def:"To mention or talk about someone or something."}
+];
+let qi=0,score=0,qs=[];
+function start(){
+  qi=0;score=0;
+  qs=[...WORDS].sort(()=>Math.random()-.5).slice(0,10).map(w=>{
+    const wrong=WORDS.filter(x=>x.word!==w.word).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.word);
+    return{def:w.def,ans:w.word,opts:[w.word,...wrong].sort(()=>Math.random()-.5)};
+  });
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('qcard').style.display='flex';
+  document.getElementById('prog').style.display='';
+  document.querySelector('.prog-wrap').style.display='';
+  render();
+}
+function render(){
+  if(qi>=qs.length){finish();return;}
+  const q=qs[qi];
+  document.getElementById('prog').textContent=`Question ${qi+1} of ${qs.length}`;
+  document.getElementById('bar').style.width=(qi/qs.length*100)+'%';
+  document.getElementById('qdef').textContent=q.def;
+  const o=document.getElementById('qopts');
+  o.innerHTML=q.opts.map(x=>`<button class="q-opt" data-a="${x}">${x}</button>`).join('');
+  document.querySelectorAll('.q-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.q-opt').forEach(b=>b.disabled=true);
+      btn.dataset.a===q.ans?(btn.classList.add('correct'),score++):(btn.classList.add('wrong'),document.querySelectorAll('.q-opt').forEach(b=>{if(b.dataset.a===q.ans)b.classList.add('reveal');}));
+      setTimeout(()=>{qi++;render();},1000);
+    });
+  });
+}
+function finish(){
+  document.getElementById('qcard').style.display='none';
+  document.getElementById('prog').style.display='none';
+  document.querySelector('.prog-wrap').style.display='none';
+  document.getElementById('final').textContent=`${score}/10`;
+  const m=['Keep practising — you\'ll get there!','Not bad — review the glossary and try again.','Good work! A little more practice and you\'ll ace it.','Great score! You know these words well.','Perfect! Outstanding work! 🏆'];
+  document.getElementById('msg').textContent=m[Math.min(Math.floor(score/2.5),4)];
+  document.getElementById('result').classList.add('show');
+}
+start();
+</script>
+</body>
+</html>

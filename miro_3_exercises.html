@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 — Exercises</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-mid:#5DCAA5;--green-dark:#0F6E56;
+  --amber-dark:#854F0B;--blue-dark:#185FA5;
+  --red:#E24B4A;--red-light:#FCEBEB;
+  --text:#1a1a18;--text-muted:#5F5E5A;--text-hint:#888780;
+  --border:#e0ddd6;--bg:#fafaf8;--surface:#ffffff;--gray-light:#F1EFE8;
+  --radius:10px;--radius-sm:6px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:1.5rem}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;margin-bottom:1rem}
+h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+.sub{font-size:13px;color:var(--text-muted);margin-bottom:1.75rem;line-height:1.6}
+
+.ex-block{margin-bottom:2.25rem}
+.ex-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text-hint);margin-bottom:.35rem;display:flex;align-items:center;gap:8px}
+.ex-label span{font-size:11px;background:var(--gray-light);color:var(--text-muted);padding:2px 8px;border-radius:10px;text-transform:none;letter-spacing:0;font-weight:500}
+.ex-instr{font-size:13.5px;color:var(--text-muted);margin-bottom:1rem;line-height:1.6}
+
+/* Word bank */
+.wordbank{display:flex;flex-wrap:wrap;gap:7px;padding:.9rem 1rem;background:var(--gray-light);border-radius:var(--radius);margin-bottom:1rem}
+.wb{font-size:13px;font-weight:500;padding:4px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--text-muted)}
+
+/* FIB */
+.fib{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.2rem;margin-bottom:7px;font-size:14px;line-height:1.9;display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.fib-n{font-size:12px;font-weight:600;color:var(--text-hint);min-width:18px}
+.fib input{font-family:'Inter',sans-serif;font-size:14px;border:none;border-bottom:2px solid var(--border);background:transparent;padding:1px 4px;width:130px;color:var(--text);outline:none;transition:border-color .15s}
+.fib input:focus{border-color:var(--green)}
+.fib input.ok{border-color:var(--green);color:var(--green-dark);background:var(--green-light);border-radius:3px}
+.fib input.no{border-color:var(--red);color:var(--red);background:var(--red-light);border-radius:3px}
+
+/* MC */
+.mc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.2rem;margin-bottom:7px}
+.mc-q{font-size:14px;margin-bottom:.65rem;line-height:1.7}
+.mc-opts{display:flex;flex-direction:column;gap:5px}
+.mc-opt{font-family:'Inter',sans-serif;font-size:13px;text-align:left;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;cursor:pointer;transition:all .15s;color:var(--text)}
+.mc-opt:hover{background:var(--green-light);border-color:var(--green-mid)}
+.mc-opt.correct{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.mc-opt.wrong{background:var(--red-light);border-color:var(--red);color:var(--red)}
+.mc-opt.show-correct{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+
+/* Match */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.match-col{display:flex;flex-direction:column;gap:5px}
+.m-word,.m-def{font-size:13px;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;line-height:1.5;user-select:none}
+.m-word{background:var(--surface);font-weight:600;text-align:center}
+.m-def{background:var(--bg);color:var(--text-muted)}
+.m-word.sel,.m-def.sel{background:var(--green-light);border-color:var(--green);color:var(--green-dark)}
+.m-word.ok,.m-def.ok{background:var(--green-light);border-color:var(--green);color:var(--green-dark);pointer-events:none;opacity:.8}
+.m-word.bad,.m-def.bad{background:var(--red-light);border-color:var(--red);color:var(--red)}
+
+/* Buttons & score */
+.btn-row{display:flex;gap:9px;margin-top:.85rem;flex-wrap:wrap}
+.btn{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:8px 18px;border-radius:var(--radius-sm);border:1px solid var(--border);cursor:pointer;background:var(--surface);color:var(--text);transition:all .15s}
+.btn:hover{background:var(--gray-light)}
+.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn.primary:hover{background:var(--green-dark)}
+.score{display:none;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--green);border-radius:var(--radius);padding:.85rem 1.1rem;margin-top:.85rem;font-size:13.5px}
+.score.show{display:flex}
+.score-n{font-size:22px;font-weight:600;color:var(--green-dark)}
+.score-t{font-size:13px;color:var(--text-muted)}
+.divider{border:none;border-top:1px solid var(--border);margin:0 0 2.25rem}
+</style>
+</head>
+<body>
+<div class="chip">B1+ · Exercises</div>
+<h2>Practice exercises</h2>
+<p class="sub">Three activities to help you use the vocabulary actively.</p>
+
+<!-- Exercise A -->
+<div class="ex-block">
+  <div class="ex-label">Exercise A <span>Fill in the blank</span></div>
+  <p class="ex-instr">Choose the correct word from the word bank and type it in the gap.</p>
+  <div class="wordbank">
+    <span class="wb">vital</span><span class="wb">estimate</span><span class="wb">hazardous</span>
+    <span class="wb">convince</span><span class="wb">evolve</span><span class="wb">assumption</span>
+    <span class="wb">considerably</span><span class="wb">habitable</span>
+  </div>
+  <div id="fib-list"></div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="checkFIB()">Check answers</button>
+    <button class="btn" onclick="resetFIB()">Reset</button>
+  </div>
+  <div class="score" id="fib-score"></div>
+</div>
+
+<hr class="divider">
+
+<!-- Exercise B -->
+<div class="ex-block">
+  <div class="ex-label">Exercise B <span>Multiple choice</span></div>
+  <p class="ex-instr">Choose the best word to complete each sentence.</p>
+  <div id="mc-list"></div>
+  <div class="score" id="mc-score"></div>
+</div>
+
+<hr class="divider">
+
+<!-- Exercise C -->
+<div class="ex-block">
+  <div class="ex-label">Exercise C <span>Match word to meaning</span></div>
+  <p class="ex-instr">Click a word on the left, then click its matching definition on the right.</p>
+  <div class="match-grid">
+    <div class="match-col" id="mw"></div>
+    <div class="match-col" id="md"></div>
+  </div>
+  <div class="btn-row"><button class="btn" onclick="resetMatch()">Reset</button></div>
+  <div class="score" id="match-score"></div>
+</div>
+
+<script>
+// FIB
+const FIB=[
+  {b:"It is ",a:" to drink clean water every day — without it, humans cannot survive.",ans:"vital"},
+  {b:"Engineers ",a:" that the bridge will take about 18 months to complete.",ans:"estimate"},
+  {b:"Some cleaning products are ",a:" if mixed together — always read the label.",ans:"hazardous"},
+  {b:"It took hours to ",a:" the committee to change its decision.",ans:"convince"},
+  {b:"Languages ",a:" over time, gaining new words and losing old ones.",ans:"evolve"},
+  {b:"The study is based on the ",a:" that people behave the same online as offline.",ans:"assumption"},
+  {b:"Temperatures in the Arctic have risen ",a:" over the last 50 years.",ans:"considerably"},
+  {b:"Without clean air and water, the Earth would no longer be ",a:" for humans.",ans:"habitable"},
+];
+function buildFIB(){
+  const c=document.getElementById('fib-list');c.innerHTML='';
+  FIB.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='fib';
+    d.innerHTML=`<span class="fib-n">${i+1}.</span><span>${it.b}</span><input data-ans="${it.ans}" placeholder="…" autocomplete="off" spellcheck="false"><span>${it.a}</span>`;
+    c.appendChild(d);
+  });
+}
+buildFIB();
+function checkFIB(){
+  let ok=0;
+  document.querySelectorAll('.fib input').forEach(inp=>{
+    inp.classList.remove('ok','no');
+    inp.value.trim().toLowerCase()===inp.dataset.ans?(inp.classList.add('ok'),ok++):inp.classList.add('no');
+  });
+  const b=document.getElementById('fib-score');
+  b.innerHTML=`<span class="score-n">${ok}/8</span><span class="score-t">${ok===8?'Perfect! 🎉':ok>=5?'Good — check highlighted answers.':'Keep trying — red answers need a fix.'}</span>`;
+  b.classList.add('show');
+}
+function resetFIB(){document.querySelectorAll('.fib input').forEach(i=>{i.value='';i.classList.remove('ok','no');});document.getElementById('fib-score').classList.remove('show');}
+
+// MC
+const MC=[
+  {q:"The factory was shut down because it released ___ chemicals into the river.",opts:["habitable","hazardous","vital","nuisance"],ans:1},
+  {q:"After years of debate, the law finally ___ significant changes.",opts:["gazed","evolved","estimated","intended"],ans:1},
+  {q:"She ___ at the painting for a long time, trying to understand its meaning.",opts:["convinced","referred","gazed","evolved"],ans:2},
+  {q:"The noise from the construction site was a constant ___.",opts:["concept","development","nuisance","assumption"],ans:2},
+  {q:"Scientists warn that without action, large parts of the tropics may become ___ by 2080.",opts:["potentially","insurmountable","uninhabitable","hazardous"],ans:2},
+  {q:"___, the new treatment could cure the disease in over 80% of cases.",opts:["Considerably","Potentially","Vitally","Insurmountably"],ans:1},
+];
+function buildMC(){
+  const c=document.getElementById('mc-list');c.innerHTML='';
+  MC.forEach((it,i)=>{
+    const d=document.createElement('div');d.className='mc';
+    d.innerHTML=`<p class="mc-q"><strong>${i+1}.</strong> ${it.q}</p><div class="mc-opts">${it.opts.map((o,j)=>`<button class="mc-opt" data-q="${i}" data-o="${j}">${o}</button>`).join('')}</div>`;
+    c.appendChild(d);
+  });
+  document.querySelectorAll('.mc-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const qi=+btn.dataset.q,oi=+btn.dataset.o,ans=MC[qi].ans;
+      const sibs=document.querySelectorAll(`.mc-opt[data-q="${qi}"]`);
+      if(sibs[0].disabled)return;
+      sibs.forEach(s=>s.disabled=true);
+      oi===ans?btn.classList.add('correct'):(btn.classList.add('wrong'),sibs[ans].classList.add('show-correct'));
+      const done=document.querySelectorAll('.mc-opt[disabled]').length/4;
+      if(done>=MC.length){
+        const c2=document.querySelectorAll('.mc-opt.correct').length;
+        const b=document.getElementById('mc-score');
+        b.innerHTML=`<span class="score-n">${c2}/6</span><span class="score-t">${c2===6?'Excellent! 🎉':c2>=4?'Well done!':'Review the red answers.'}</span>`;
+        b.classList.add('show');
+      }
+    });
+  });
+}
+buildMC();
+
+// Matching
+const MATCH=[
+  {word:"gaze",def:"To look steadily at something for a long time"},
+  {word:"vital",def:"Extremely important for success or survival"},
+  {word:"concept",def:"An abstract idea or principle"},
+  {word:"nuisance",def:"Something annoying that causes problems"},
+  {word:"assumption",def:"A belief accepted as true without proof"},
+  {word:"insurmountable",def:"Impossible to overcome"},
+];
+let mSel={w:null,d:null},mDone=[];
+function buildMatch(){
+  const wc=document.getElementById('mw'),dc=document.getElementById('md');
+  wc.innerHTML='';dc.innerHTML='';
+  mSel={w:null,d:null};mDone=[];
+  const sd=[...MATCH].sort(()=>Math.random()-.5);
+  MATCH.forEach(it=>{
+    const e=document.createElement('div');e.className='m-word';e.textContent=it.word;e.dataset.word=it.word;
+    e.onclick=()=>{if(e.classList.contains('ok'))return;document.querySelectorAll('.m-word').forEach(x=>x.classList.remove('sel','bad'));e.classList.add('sel');mSel.w=e;tryM();};
+    wc.appendChild(e);
+  });
+  sd.forEach(it=>{
+    const e=document.createElement('div');e.className='m-def';e.textContent=it.def;e.dataset.word=it.word;
+    e.onclick=()=>{if(e.classList.contains('ok'))return;document.querySelectorAll('.m-def').forEach(x=>x.classList.remove('sel','bad'));e.classList.add('sel');mSel.d=e;tryM();};
+    dc.appendChild(e);
+  });
+  document.getElementById('match-score').classList.remove('show');
+}
+function tryM(){
+  if(!mSel.w||!mSel.d)return;
+  const w=mSel.w,d=mSel.d;
+  if(w.dataset.word===d.dataset.word){
+    w.classList.remove('sel');w.classList.add('ok');d.classList.remove('sel');d.classList.add('ok');
+    mDone.push(w.dataset.word);
+    if(mDone.length===MATCH.length){const b=document.getElementById('match-score');b.innerHTML=`<span class="score-n">6/6</span><span class="score-t">All matched! Great job! 🎉</span>`;b.classList.add('show');}
+  }else{
+    w.classList.add('bad');d.classList.add('bad');
+    setTimeout(()=>{w.classList.remove('sel','bad');d.classList.remove('sel','bad');},700);
+  }
+  mSel={w:null,d:null};
+}
+function resetMatch(){buildMatch();}
+buildMatch();
+</script>
+</body>
+</html>

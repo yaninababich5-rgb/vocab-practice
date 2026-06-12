@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2 — Glossary</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-mid:#5DCAA5;--green-dark:#0F6E56;
+  --blue-dark:#185FA5;--amber-dark:#854F0B;
+  --text:#1a1a18;--text-muted:#5F5E5A;--text-hint:#888780;
+  --border:#e0ddd6;--bg:#fafaf8;--surface:#ffffff;--radius:10px;--radius-sm:6px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:1.5rem}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;margin-bottom:1rem}
+h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+.sub{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.6}
+.filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:1.25rem}
+.filter-row button{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s}
+.filter-row button.on{background:var(--green-light);color:var(--green-dark);border-color:var(--green-mid)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.2rem;cursor:pointer;transition:border-color .15s,transform .1s}
+.card:hover{border-color:var(--green-mid);transform:translateY(-1px)}
+.card.open{border-color:var(--green);border-width:1.5px}
+.c-head{display:flex;align-items:baseline;gap:7px;margin-bottom:5px}
+.c-word{font-size:15px;font-weight:600;color:var(--text)}
+.c-pos{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.pos-verb{color:var(--blue-dark)}.pos-noun{color:var(--green-dark)}.pos-adjective{color:var(--amber-dark)}.pos-adverb{color:#993C1D}.pos-phrase{color:#534AB7}
+.c-def{font-size:13px;color:var(--text-muted);line-height:1.6}
+.c-expand{display:none;margin-top:10px}
+.card.open .c-expand{display:block}
+.c-ex{font-size:13px;font-style:italic;color:var(--text);border-left:2px solid var(--green-mid);padding-left:10px;line-height:1.65;margin-bottom:8px}
+.c-tip{font-size:12px;color:var(--green-dark);background:var(--green-light);border-radius:6px;padding:7px 10px;line-height:1.55}
+</style>
+</head>
+<body>
+<div class="chip">B1+ · Glossary</div>
+<h2>Word glossary</h2>
+<p class="sub">16 key words. Click any card to expand it.</p>
+<div class="filter-row">
+  <button class="on" onclick="filter('all',this)">All (16)</button>
+  <button onclick="filter('verb',this)">Verbs</button>
+  <button onclick="filter('noun',this)">Nouns</button>
+  <button onclick="filter('adjective',this)">Adjectives</button>
+  <button onclick="filter('adverb',this)">Adverbs</button>
+</div>
+<div class="grid" id="grid"></div>
+
+<script>
+const WORDS=[
+  {id:"gaze",word:"gaze",pos:"verb",def:"To look steadily at something for a long time, often with deep thought or strong emotion.",ex:"She gazed at the stars and wondered about life beyond Earth.",tip:"Compare: look (quick), watch (moving things), gaze (long, thoughtful stare)."},
+  {id:"intend",word:"intend",pos:"verb",def:"To have a plan or purpose; to mean to do something.",ex:"The government intends to introduce new laws next year.",tip:"Structure: 'intend to + verb'. Don't confuse with 'attend'."},
+  {id:"vital",word:"vital",pos:"adjective",def:"Extremely important; necessary for success or survival.",ex:"Regular exercise is vital for good health.",tip:"Synonyms: essential, crucial. Stronger than 'important'."},
+  {id:"estimate",word:"estimate",pos:"verb",def:"To roughly calculate the size, value, or amount of something.",ex:"Scientists estimate that 1 million species are at risk of extinction.",tip:"An estimate is not exact — it's your best calculation with available info."},
+  {id:"assumption",word:"assumption",pos:"noun",def:"Something you believe to be true without proof.",ex:"The plan was based on the assumption that costs would stay low.",tip:"Making wrong assumptions can lead to big mistakes!"},
+  {id:"development",word:"development",pos:"noun",def:"The process by which something grows, changes, or becomes more advanced.",ex:"The development of new technology changed how we communicate.",tip:"Countable (a new development = event) or uncountable (steady development)."},
+  {id:"concept",word:"concept",pos:"noun",def:"An abstract idea or principle.",ex:"The concept of democracy is based on equal rights for all.",tip:"Use 'the concept of + noun': 'the concept of free trade'."},
+  {id:"hazardous",word:"hazardous",pos:"adjective",def:"Dangerous; likely to cause harm.",ex:"Hazardous chemicals must be stored in locked containers.",tip:"Often formal: hazardous waste, hazardous conditions."},
+  {id:"fear",word:"fear",pos:"noun",def:"An unpleasant feeling caused by the belief that something dangerous might happen.",ex:"Fear of failure stops many people from trying new things.",tip:"'Fear of + noun/gerund' (fear of heights). As a verb: I fear the worst."},
+  {id:"nuisance",word:"nuisance",pos:"noun",def:"A person or thing that is annoying or causes problems.",ex:"Loud music at night is a real nuisance for neighbours.",tip:"Less serious than 'danger'. Used for irritating, not life-threatening, things."},
+  {id:"evolve",word:"evolve",pos:"verb",def:"To develop gradually, or to cause something to change over time.",ex:"The company's strategy has evolved significantly over the years.",tip:"Originally biology — now used broadly for any gradual change."},
+  {id:"lead",word:"lead to",pos:"phrase",def:"To cause something to happen as a result.",ex:"Poor diet can lead to serious health problems.",tip:"Structure: 'X leads to Y'. Very common in academic writing."},
+  {id:"considerably",word:"considerably",pos:"adverb",def:"To a large or noticeable degree.",ex:"Prices have risen considerably since last year.",tip:"Use with comparatives: considerably better / faster / higher."},
+  {id:"potentially",word:"potentially",pos:"adverb",def:"Possibly; in a way that might happen in the future.",ex:"This discovery could potentially save thousands of lives.",tip:"Shows uncertainty. Softer than 'definitely' or 'certainly'."},
+  {id:"habitable",word:"habitable",pos:"adjective",def:"Suitable and safe enough to live in.",ex:"Efforts are needed to keep the planet habitable for future generations.",tip:"Opposite: uninhabitable. Related: habitat (where an animal lives)."},
+  {id:"insurmountable",word:"insurmountable",pos:"adjective",def:"So great that it cannot be dealt with or overcome.",ex:"The team faced seemingly insurmountable odds, but they succeeded.",tip:"Root: surmount = overcome. The prefix 'in-' makes it negative. High-level word!"},
+  {id:"convince",word:"convince",pos:"verb",def:"To persuade someone that something is true, or to do something.",ex:"She convinced her manager to approve the new project budget.",tip:"'convince someone to do sth' OR 'convince someone that + clause'."},
+  {id:"refer",word:"refer to",pos:"phrase",def:"To mention or talk about someone or something.",ex:"The professor referred to several studies to support her argument.",tip:"Formal synonym of 'mention'. Also: look at — 'refer to a dictionary'."}
+];
+let openId=null,currentFilter='all';
+function render(f){
+  const g=document.getElementById('grid');g.innerHTML='';
+  (f==='all'?WORDS:WORDS.filter(w=>w.pos===f||w.pos.includes(f))).forEach(w=>{
+    const d=document.createElement('div');
+    d.className='card'+(openId===w.id?' open':'');
+    d.innerHTML=`<div class="c-head"><span class="c-word">${w.word}</span><span class="c-pos pos-${w.pos.replace(' ','')}">${w.pos}</span></div><p class="c-def">${w.def}</p><div class="c-expand"><p class="c-ex">"${w.ex}"</p><p class="c-tip">💡 ${w.tip}</p></div>`;
+    d.onclick=()=>{openId=openId===w.id?null:w.id;render(currentFilter);};
+    g.appendChild(d);
+  });
+}
+function filter(f,btn){
+  currentFilter=f;openId=null;
+  document.querySelectorAll('.filter-row button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');render(f);
+}
+render('all');
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1 — Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1D9E75;--green-light:#E1F5EE;--green-mid:#5DCAA5;--green-dark:#0F6E56;
+  --text:#1a1a18;--text-muted:#5F5E5A;--text-hint:#888780;
+  --border:#e0ddd6;--bg:#fafaf8;--surface:#ffffff;--radius:10px;--radius-sm:6px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);padding:1.5rem}
+.chip{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;background:var(--green-light);color:var(--green-dark);padding:3px 10px;border-radius:20px;margin-bottom:1rem}
+h2{font-family:'Lora',serif;font-size:1.2rem;font-weight:600;margin-bottom:.3rem}
+.sub{font-size:13px;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.6}
+.passage{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem 1.75rem;font-size:15px;line-height:1.9}
+.passage p{margin-bottom:1rem}.passage p:last-child{margin-bottom:0}
+.hw{color:var(--green-dark);font-weight:600;border-bottom:2px solid var(--green-mid);cursor:pointer;padding:0 2px;border-radius:2px;transition:background .15s}
+.hw:hover{background:var(--green-light)}
+.tooltip-box{display:none;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-top:.75rem;font-size:13.5px;line-height:1.7}
+.tooltip-box.open{display:block}
+.t-word{font-weight:600;font-size:14px;color:var(--green-dark)}
+.t-pos{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-hint);margin-left:6px}
+.t-def{color:var(--text);margin-top:4px}
+.t-tip{color:var(--text-muted);margin-top:6px;font-style:italic;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="chip">B1+ · Reading</div>
+<h2>Read and explore</h2>
+<p class="sub">Click any <span style="color:var(--green-dark);font-weight:600;border-bottom:2px solid var(--green-mid)">green word</span> to see its meaning.</p>
+
+<div id="tooltip-display" class="tooltip-box"></div>
+
+<div class="passage">
+  <p>Scientists who study climate change often <span class="hw" data-id="gaze">gaze</span> at satellite images for hours, trying to understand the <span class="hw" data-id="development">development</span> of extreme weather events. Their research is <span class="hw" data-id="vital">vital</span> — it can <span class="hw" data-id="lead">lead to</span> better decisions that protect millions of people.</p>
+  <p>One key task is to <span class="hw" data-id="estimate">estimate</span> how fast ice sheets are melting. Researchers make this <span class="hw" data-id="assumption">assumption</span>: if current trends continue, sea levels could rise <span class="hw" data-id="considerably">considerably</span> by 2100. Some even argue the situation is <span class="hw" data-id="potentially">potentially</span> <span class="hw" data-id="insurmountable">insurmountable</span> without urgent global action.</p>
+  <p>Governments <span class="hw" data-id="intend">intend</span> to cut emissions, but they must first <span class="hw" data-id="convince">convince</span> industries to change. Pollution is not just a <span class="hw" data-id="nuisance">nuisance</span> — it is <span class="hw" data-id="hazardous">hazardous</span> to health and can <span class="hw" data-id="evolve">evolve</span> into a crisis. The <span class="hw" data-id="concept">concept</span> of a "green economy" is becoming central to these discussions, and policymakers often <span class="hw" data-id="refer">refer to</span> it when defending new laws. Making the planet <span class="hw" data-id="habitable">habitable</span> for future generations requires overcoming <span class="hw" data-id="fear">fear</span> of short-term economic costs.</p>
+</div>
+
+<script>
+const WORDS={
+  gaze:{word:"gaze",pos:"verb",def:"To look steadily at something for a long time, often with deep thought or strong emotion.",tip:"Compare: look (quick), watch (moving things), gaze (long, thoughtful stare)."},
+  intend:{word:"intend",pos:"verb",def:"To have a plan or purpose; to mean to do something.",tip:"Structure: 'intend to + verb'. Don't confuse with 'attend'."},
+  vital:{word:"vital",pos:"adjective",def:"Extremely important; necessary for success or survival.",tip:"Synonyms: essential, crucial. Stronger than 'important'."},
+  estimate:{word:"estimate",pos:"verb",def:"To roughly calculate the size, value, or amount of something.",tip:"An estimate is not exact — it's your best calculation with available information."},
+  assumption:{word:"assumption",pos:"noun",def:"Something you believe to be true without proof.",tip:"Making wrong assumptions can lead to big mistakes."},
+  development:{word:"development",pos:"noun",def:"The process by which something grows, changes, or becomes more advanced.",tip:"Can be countable (a new development) or uncountable (steady development)."},
+  concept:{word:"concept",pos:"noun",def:"An abstract idea or principle.",tip:"Use 'the concept of + noun': 'the concept of free trade'."},
+  hazardous:{word:"hazardous",pos:"adjective",def:"Dangerous; likely to cause harm.",tip:"Often used in formal/official language: hazardous waste, hazardous conditions."},
+  fear:{word:"fear",pos:"noun",def:"An unpleasant feeling caused by the belief that something dangerous might happen.",tip:"'Fear of + noun/gerund' (fear of heights). As a verb: I fear the worst."},
+  nuisance:{word:"nuisance",pos:"noun",def:"A person or thing that is annoying or causes problems.",tip:"Less serious than 'danger'. Used for irritating rather than life-threatening things."},
+  evolve:{word:"evolve",pos:"verb",def:"To develop gradually, or to cause something to change over time.",tip:"Originally biology, now used broadly for any gradual change."},
+  lead:{word:"lead to",pos:"phrase",def:"To cause something to happen as a result.",tip:"Structure: 'X leads to Y'. Very common in academic writing."},
+  considerably:{word:"considerably",pos:"adverb",def:"To a large or noticeable degree.",tip:"Use with comparatives: considerably better / faster / higher."},
+  potentially:{word:"potentially",pos:"adverb",def:"Possibly; in a way that might happen in the future.",tip:"Shows uncertainty. Softer than 'definitely' or 'certainly'."},
+  habitable:{word:"habitable",pos:"adjective",def:"Suitable and safe enough to live in.",tip:"Opposite: uninhabitable. Related: habitat (where an animal lives)."},
+  insurmountable:{word:"insurmountable",pos:"adjective",def:"So great that it cannot be dealt with or overcome.",tip:"Root: surmount = overcome. The prefix 'in-' makes it negative."},
+  convince:{word:"convince",pos:"verb",def:"To persuade someone that something is true, or to do something.",tip:"'convince someone to do something' OR 'convince someone that + clause'."},
+  refer:{word:"refer to",pos:"phrase",def:"To mention or talk about someone or something.",tip:"Formal synonym of 'mention'. Also means to look at: 'refer to a dictionary'."}
+};
+let openId=null;
+document.querySelectorAll('.hw').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const id=el.dataset.id,w=WORDS[id],box=document.getElementById('tooltip-display');
+    if(openId===id){box.classList.remove('open');openId=null;return;}
+    openId=id;
+    box.innerHTML=`<span class="t-word">${w.word}</span><span class="t-pos">${w.pos}</span><p class="t-def">${w.def}</p><p class="t-tip">💡 ${w.tip}</p>`;
+    box.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
